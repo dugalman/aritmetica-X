@@ -47,6 +47,7 @@ La comunicación SE DEBE REALIZAR USANDO SOCKET TCP, NO WEBSOCKET NI REST
 
 Las mejoras a realizar se pueden hacer en cualquier orden, pero se debe documentar el avance en todas las ramas.
 Si no se llega a implementar todo el desarrollo, generar un documento que indique hasta donde se alcanzó y que falta desarrollar, ejemplo actualizar el CHANGELOG.md
+EJECUTAR TEST Y COVERTURA DEL CODIGO
 
 ### Mejoras Leonhard Euler : más funciones matemáticas
 
