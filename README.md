@@ -49,8 +49,9 @@ La comunicación SE DEBE REALIZAR USANDO SOCKET TCP, NO WEBSOCKET NI REST
 - Si no se llega a implementar todo el desarrollo, generar un documento que indique hasta donde se alcanzó y que falta desarrollar, ejemplo actualizar el CHANGELOG.md
 - Una ves finalizada la rama, Dejar el branch de tabajo y pedir hacer un MergeRequest contra la rama **dev**
 - Si se encuentran bug o errores, corregirlos y documentarlos.
-- SE VALORAN MUCHO LA DOCUMENTACIÓN PARA ENTERDER EL DESAROOLO, LOS COMENTARIOS EN EL CODIGO O AGREGAR DIGRAMAS DE FLUJO, CASOS DE USO, MODELOADO EN C4.
+- SE VALORAN MUCHO LA DOCUMENTACIÓN PARA ENTERDER EL DESAROLLO, LOS COMENTARIOS EN EL CODIGO O AGREGAR DIGRAMAS DE FLUJO, CASOS DE USO, MODELOADO EN C4.
 - SE PREFIRE TERNER  WORD CON LA ESTRATEGIA SE VA A IMPLEMENTAS, IGAMENES CON DIAGRAMAS QUE ACLARES
+- REALIZAR COBERTURA Y TEST
 
 ### Mejoras Leonhard-Euler : más funciones matemáticas
 
