@@ -80,6 +80,7 @@ Si no se llega a implementar todo el desarrollo, generar un documento que indiqu
 - Se puede refactorizar el código para facilitar el testing, además se recomienda hacer un análisis de cobertura del código
 - Con respecto a **git**, no hacer un solo push con todos, mostrar los pasos intermedios. trabajar en la rama solution.
 - Describir en texto y mantener el changelog
+- Manejar la version de version del projecto con el esquima de golang
 
 ## Ejemplo de Uso
 
@@ -96,6 +97,3 @@ Desde otra terminal entrar a la carpeta `Client` y arrancar el cliente, este va 
 $ go run .
 Resultado de 10 + 5 = 15.00
 ```
-
-
-
