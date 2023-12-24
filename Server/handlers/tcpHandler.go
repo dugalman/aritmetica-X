@@ -25,13 +25,7 @@ func HandleClient(conn net.Conn) {
 			return
 		}
 
-		result, errorCode := operations.Operation(request)
-		response := operations.OperationResponse{
-			Request:   request,
-			Result:    result,
-			ErrorCode: errorCode,
-		}
-
+		response := operations.Operation(request)
 		err = encoder.Encode(response)
 		if err != nil {
 			fmt.Println("Error al enviar la respuesta:", err)

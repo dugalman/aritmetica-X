@@ -1,6 +1,8 @@
 package operations
 
-import "math"
+import (
+	"math"
+)
 
 // OperationType representa el tipo de operacion a ejecutar
 type OperationType int
@@ -14,6 +16,17 @@ const (
 	LOG   OperationType = 6
 	EXP   OperationType = 7
 	SQR   OperationType = 8
+)
+
+// Códigos de Error Personalizados
+const (
+	OK                 int = 0
+	OverflowSum        int = 1
+	InvalidInputParam  int = 2
+	DivisionByZero     int = 3
+	InvalidLogarithm   int = 4
+	NegativeSquareRoot int = 5
+	InvalidOperation   int = 6
 )
 
 // OperationRequest representa la estructura de la solicitud del cliente
@@ -30,37 +43,73 @@ type OperationResponse struct {
 	ErrorCode int
 }
 
-func Operation(request OperationRequest) (float64, int) {
+func Operation(request OperationRequest) OperationResponse {
+	var response OperationResponse
+
+	//Validacion de parametros de entrada
+	if !isValidNumber(request.Num1, request.Num2) {
+		response.ErrorCode = InvalidInputParam
+	}
+
 	switch request.Op {
 	case SUM:
-		return float64(request.Num1 + request.Num2), 0
+		sumResult := float64(request.Num1 + request.Num2)
+		if sumResult > math.MaxFloat64 {
+			response.ErrorCode = OverflowSum
+		} else {
+			response.Result = sumResult
+			response.ErrorCode = OK
+		}
 	case MINUS:
-		return float64(request.Num1 - request.Num2), 0
+		minusResult := float64(request.Num1 - request.Num2)
+		response.Result = minusResult
+		response.ErrorCode = OK
+
 	case DIV:
 		if request.Num2 != 0 {
-			return float64(request.Num1) / float64(request.Num2), 0
+			divResult := float64(request.Num1) / float64(request.Num2)
+			response.Result = divResult
+			response.ErrorCode = OK
 		} else {
-			return 0, -2 // Código de error para division
+			response.ErrorCode = DivisionByZero
 		}
 	case MULT:
-		return float64(request.Num1 * request.Num2), 0
+		multResult := float64(request.Num1 * request.Num2)
+		response.Result = multResult
+		response.ErrorCode = OK
 	case SIN:
-		return math.Sin(float64(request.Num1)), 0
+		sinResult := math.Sin(float64(request.Num1))
+		response.Result = sinResult
+		response.ErrorCode = OK
 	case LOG:
 		if request.Num1 > 0 && request.Num2 > 0 {
-			return math.Log(float64(request.Num1)) / math.Log(float64(request.Num2)), 0
+			logResult := math.Log(float64(request.Num1)) / math.Log(float64(request.Num2))
+			response.Result = logResult
+			response.ErrorCode = OK
 		} else {
-			return 0, -3 // Código de error para logaritmo no valido
+			response.ErrorCode = InvalidLogarithm
 		}
 	case EXP:
-		return math.Pow(float64(request.Num1), float64(request.Num2)), 0
+		expResult := math.Pow(float64(request.Num1), float64(request.Num2))
+		response.Result = expResult
+		response.ErrorCode = OK
 	case SQR:
 		if request.Num1 >= 0 {
-			return math.Sqrt(float64(request.Num1)), 0
+			sqrtResult := math.Sqrt(float64(request.Num1))
+			response.Result = sqrtResult
+			response.ErrorCode = OK
 		} else {
-			return 0, -4 // Código de error para raiz cuadrada - numero negativo
+			response.ErrorCode = NegativeSquareRoot
 		}
 	default:
-		return 0, -1 // Código de error para operación no valida
+		response.ErrorCode = InvalidOperation
 	}
+	response.Request = request
+	return response
+}
+
+func isValidNumber(num1, num2 interface{}) bool {
+	_, esNum1 := num1.(float64)
+	_, esNum2 := num2.(float64)
+	return esNum1 && esNum2
 }

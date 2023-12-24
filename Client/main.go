@@ -20,9 +20,9 @@ func main() {
 	encoder := gob.NewEncoder(conn)
 
 	request := operations.OperationRequest{
-		Num1: 10,
-		Num2: 2,
-		Op:   operations.MULT,
+		Num1: -10,
+		Num2: 0,
+		Op:   operations.SQR,
 	}
 
 	err = encoder.Encode(request)
@@ -46,6 +46,7 @@ func main() {
 		} else if response.Request.Op == operations.SQR {
 			fmt.Printf("Resultado de la raiz cuadrada de %d = %.2f\n", response.Request.Num1, response.Result)
 		} else {
+			fmt.Println(response)
 			fmt.Printf("Resultado de %d %s %d = %.2f\n", response.Request.Num1, operations.OpSymbol(response.Request.Op), response.Request.Num2, response.Result)
 		}
 	}
