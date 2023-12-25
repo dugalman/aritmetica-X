@@ -20,8 +20,8 @@ func main() {
 	encoder := gob.NewEncoder(conn)
 
 	request := operations.OperationRequest{
-		Num1: -10,
-		Num2: 0,
+		Num1: 10,
+		Num2: 2,
 		Op:   operations.SQR,
 	}
 
