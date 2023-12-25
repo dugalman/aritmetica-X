@@ -2,23 +2,10 @@ package main
 
 import (
 	"encoding/gob"
+	"examen_client/operations"
 	"fmt"
 	"net"
 )
-
-// OperationRequest representa la estructura de la solicitud del cliente
-type OperationRequest struct {
-	Num1 int
-	Num2 int
-	Op   rune
-}
-
-// OperationResponse representa la estructura de la respuesta del servidor
-type OperationResponse struct {
-	Request   OperationRequest
-	Result    float64
-	ErrorCode int
-}
 
 func main() {
 	conn, err := net.Dial("tcp", "localhost:8080")
@@ -31,10 +18,10 @@ func main() {
 	decoder := gob.NewDecoder(conn)
 	encoder := gob.NewEncoder(conn)
 
-	request := OperationRequest{
-		Num1: 10,
-		Num2: 5,
-		Op:   '+',
+	request := operations.OperationRequest{
+		Input1: true,
+		Input2: true,
+		Op:     operations.NAND,
 	}
 
 	err = encoder.Encode(request)
@@ -43,7 +30,7 @@ func main() {
 		return
 	}
 
-	var response OperationResponse
+	var response operations.OperationResponse
 	err = decoder.Decode(&response)
 	if err != nil {
 		fmt.Println("Error al recibir la respuesta:", err)
@@ -53,6 +40,11 @@ func main() {
 	if response.ErrorCode != 0 {
 		fmt.Printf("Error: %d\n", response.ErrorCode)
 	} else {
-		fmt.Printf("Resultado de %d %c %d = %.2f\n", response.Request.Num1, response.Request.Op, response.Request.Num2, response.Result)
+		if response.Request.Op == operations.NOT {
+			fmt.Printf("Resultado de NOT_( %v ) = %.v\n", response.Request.Input1, response.Result.Value)
+		} else {
+			fmt.Printf("Resultado de %v %v %v = %.v\n", response.Request.Input1, operations.OpSymbol(response.Request.Op), response.Request.Input2, response.Result.Value)
+		}
+
 	}
 }
