@@ -1,3 +1,5 @@
 module examen_server
 
-go 1.21.3
+go 1.21
+
+require golang.org/x/crypto v0.17.0 // indirect
