@@ -7,10 +7,23 @@ import (
 )
 
 // OperationRequest representa la estructura de la solicitud del cliente
+type OperationType int
+
+const (
+	SUM   OperationType = 1
+	MINUS OperationType = 2
+	DIV   OperationType = 3
+	MULT  OperationType = 4
+	SIN   OperationType = 5
+	LOG   OperationType = 6
+	EXP   OperationType = 7
+	SQR   OperationType = 8
+)
+
 type OperationRequest struct {
-	Num1 int
-	Num2 int
-	Op   rune
+	Num1 float64
+	Num2 float64
+	Op   OperationType
 }
 
 // OperationResponse representa la estructura de la respuesta del servidor
@@ -37,10 +50,15 @@ func handleClient(conn net.Conn) {
 		var response OperationResponse
 
 		switch request.Op {
-		case '+':
+		case SUM:
 			response.Result = float64(request.Num1 + request.Num2)
-		case '-':
+		case MINUS:
 			response.Result = float64(request.Num1 - request.Num2)
+		case DIV:
+			response.Result = float64(request.Num1) / float64(request.Num2)
+		case MULT:
+			response.Result = float64(request.Num1) * float64(request.Num2)
+
 		// Puedes agregar más operaciones aquí según sea necesario
 
 		default:
