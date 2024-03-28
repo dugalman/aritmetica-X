@@ -110,7 +110,7 @@ func main() {
 	//Verifico en este caso para que no se ingrese el segundo numero en base a la operacion
 
 	for {
-		fmt.Println("Ingrese el primer numero:")
+		fmt.Println("Ingrese el primer número:")
 		_, err := fmt.Scan(&num1Str)
 		if err != nil {
 			fmt.Println("Error: Por favor, ingrese un número válido.")
@@ -125,20 +125,26 @@ func main() {
 		break
 	}
 
-	for {
-		fmt.Println("Ingrese el segundo numero:")
-		_, err := fmt.Scan(&num2Str)
-		if err != nil {
-			fmt.Println("Error: Por favor, ingrese un número válido.")
-			continue
-		}
+	// Comprueba si la operación requiere un segundo número
+	if operation != SIN && operation != LOG && operation != EXP && operation != SQR {
+		for {
+			fmt.Println("Ingrese el segundo número:")
+			_, err := fmt.Scan(&num2Str)
+			if err != nil {
+				fmt.Println("Error: Por favor, ingrese un número válido.")
+				continue
+			}
 
-		num2, err = strconv.ParseFloat(num2Str, 64)
-		if err != nil {
-			fmt.Println("Error: Por favor, ingrese un número válido.")
-			continue
+			num2, err = strconv.ParseFloat(num2Str, 64)
+			if err != nil {
+				fmt.Println("Error: Por favor, ingrese un número válido.")
+				continue
+			}
+			break
 		}
-		break
+	} else {
+		// Establece num2 a 0 para operaciones unarias
+		num2 = 0
 	}
 
 	if operation == DIV && num2 == 0 {
