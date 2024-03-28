@@ -2,63 +2,27 @@ package main
 
 import (
 	"encoding/gob"
+	"examen_client/utils"
 	"fmt"
 	"net"
 	"strconv"
 )
 
 // OperationRequest representa la estructura de la solicitud del cliente
-type OperationType int
-
-const (
-	SUM   OperationType = 1
-	MINUS OperationType = 2
-	DIV   OperationType = 3
-	MULT  OperationType = 4
-	SIN   OperationType = 5
-	LOG   OperationType = 6
-	EXP   OperationType = 7
-	SQR   OperationType = 8
-)
-
 type OperationRequest struct {
 	Num1 float64
 	Num2 float64
-	Op   OperationType
+	Op   utils.OperationType // Usa el tipo definido en utils
 }
 
-// OperationResponse representa la estructura de la respuesta del servidor
 type OperationResponse struct {
 	Request   OperationRequest
 	Result    float64
 	ErrorCode int
 }
 
-func operationSymbol(op OperationType) string {
-	switch op {
-	case SUM:
-		return "+"
-	case MINUS:
-		return "-"
-	case DIV:
-		return "/"
-	case MULT:
-		return "*"
-	case SIN:
-		return "sin"
-	case LOG:
-		return "log"
-	case EXP:
-		return "exp"
-	case SQR:
-		return "sqr"
-	default:
-		return "?"
-	}
-
-}
-
 func main() {
+
 	conn, err := net.Dial("tcp", "localhost:8080")
 	if err != nil {
 		fmt.Println("Error al conectar al servidor:", err)
@@ -71,7 +35,7 @@ func main() {
 
 	var num1Str, num2Str string
 	var num1, num2 float64
-	var operation OperationType
+	var operation utils.OperationType
 
 	//El menu de opciones
 	fmt.Println("Seleccione el tipo de operacion")
@@ -107,8 +71,6 @@ func main() {
 
 	}
 
-	//Verifico en este caso para que no se ingrese el segundo numero en base a la operacion
-
 	for {
 		fmt.Println("Ingrese el primer número:")
 		_, err := fmt.Scan(&num1Str)
@@ -126,7 +88,7 @@ func main() {
 	}
 
 	// Comprueba si la operación requiere un segundo número
-	if operation != SIN && operation != LOG && operation != EXP && operation != SQR {
+	if operation != utils.SIN && operation != utils.LOG && operation != utils.EXP && operation != utils.SQR {
 		for {
 			fmt.Println("Ingrese el segundo número:")
 			_, err := fmt.Scan(&num2Str)
@@ -147,11 +109,12 @@ func main() {
 		num2 = 0
 	}
 
-	if operation == DIV && num2 == 0 {
+	//Verifico en base a la operacion y el segundo numero para no dividir o multiplicar por cero
+	if operation == utils.DIV && num2 == 0 {
 		fmt.Println("Error: No se puede dividir entre cero")
 		return
 	}
-	if operation == MULT && (num1 == 0 || num2 == 0) {
+	if operation == utils.MULT && (num1 == 0 || num2 == 0) {
 		fmt.Println("Error: No se puede multiplicar entre cero")
 		return
 	}
@@ -182,6 +145,7 @@ func main() {
 	if response.ErrorCode != 0 {
 		fmt.Printf("Error: %d\n", response.ErrorCode)
 	} else {
-		fmt.Printf("Resultado de %g %s %g = %g\n", response.Request.Num1, operationSymbol(response.Request.Op), response.Request.Num2, response.Result)
+		fmt.Printf("Resultado de %g %s %g = %g\n", response.Request.Num1, utils.OperationSymbol(response.Request.Op), response.Request.Num2, response.Result)
 	}
+
 }

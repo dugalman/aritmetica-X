@@ -28,12 +28,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - El cliente lee las operaciones desde el archivo **operation.txt** y las envia una por una al server
   - El server debe tener una bitacoria con las operaciones procesadas, se puede utilizar biblioteas externas
 
-## [0.0.0] - 2023-03-05
+## [0.0.1] - 2023-03-05
 
 ### Removed
 
 ### Changed
+Server
+  Función main(): 
 
+Esta es la función principal del programa.
+Se encarga de establecer una conexión TCP con el servidor y enviar solicitudes de operación.
+Proporciona un menú para que el usuario seleccione el tipo de operación a realizar y solicite los números necesarios según la operación seleccionada.
+Maneja las respuestas del servidor e imprime los resultados o mensajes de error.
+Estructuras OperationRequest y OperationResponse:
+
+OperationRequest representa la solicitud del cliente al servidor e incluye los números a operar y el tipo de operación.
+OperationResponse representa la respuesta del servidor e incluye el resultado de la operación y un código de error si corresponde.
+
+Función operationSymbol(op OperationType) string:
+
+Devuelve el símbolo correspondiente a cada tipo de operación, utilizado para mostrar la operación realizada en los resultados.
+
+Client
+Estructuras y constantes:
+OperationType: Es un tipo enumerado que define los diferentes tipos de operaciones disponibles, como suma, resta, división, multiplicación, seno, logaritmo, exponencial y raíz cuadrada.
+
+OperationRequest: Estructura que representa la solicitud del cliente al servidor, incluyendo los números a operar y el tipo de operación.
+
+OperationResponse: Estructura que representa la respuesta del servidor, incluyendo el resultado de la operación y un código de error si corresponde.
+
+Funciones:
+operationSymbol(op OperationType) string: Esta función toma un tipo de operación como entrada y devuelve el símbolo correspondiente de la operación, utilizado para mostrar la operación realizada en los resultados.
 ### Fixed
 
 ### Added

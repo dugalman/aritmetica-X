@@ -60,7 +60,6 @@ func handleClient(conn net.Conn) {
 		case MULT:
 			response.Result = float64(request.Num1) * float64(request.Num2)
 		case SIN:
-			fmt.Println("Valor recibido:", request.Num1)
 			response.Result = math.Sin(float64(request.Num1))
 		case LOG:
 			response.Result = math.Log(float64(request.Num1))
