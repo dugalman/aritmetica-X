@@ -107,8 +107,10 @@ func main() {
 
 	}
 
+	//Verifico en este caso para que no se ingrese el segundo numero en base a la operacion
+
 	for {
-		fmt.Println("Ingrese el primero numero:")
+		fmt.Println("Ingrese el primer numero:")
 		_, err := fmt.Scan(&num1Str)
 		if err != nil {
 			fmt.Println("Error: Por favor, ingrese un número válido.")
@@ -139,6 +141,15 @@ func main() {
 		break
 	}
 
+	if operation == DIV && num2 == 0 {
+		fmt.Println("Error: No se puede dividir entre cero")
+		return
+	}
+	if operation == MULT && (num1 == 0 || num2 == 0) {
+		fmt.Println("Error: No se puede multiplicar entre cero")
+		return
+	}
+
 	request := OperationRequest{
 		Num1: num1,
 		Num2: num2,
@@ -156,6 +167,10 @@ func main() {
 	if err != nil {
 		fmt.Println("Error al recibir la respuesta:", err)
 		return
+	}
+
+	if response.ErrorCode == 1 {
+		fmt.Printf("Error: %d\n", response.ErrorCode)
 	}
 
 	if response.ErrorCode != 0 {

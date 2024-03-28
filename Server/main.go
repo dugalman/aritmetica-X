@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/gob"
 	"fmt"
+	"math"
 	"net"
 )
 
@@ -58,6 +59,8 @@ func handleClient(conn net.Conn) {
 			response.Result = float64(request.Num1) / float64(request.Num2)
 		case MULT:
 			response.Result = float64(request.Num1) * float64(request.Num2)
+		case SIN:
+			response.Result = math.Sin(float64(request.Num1))
 
 		// Puedes agregar más operaciones aquí según sea necesario
 
