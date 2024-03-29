@@ -48,7 +48,7 @@ func main() {
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Ingrese su nombre de usuario: ")
+	fmt.Print("Ingrese su nombre de usuario para registrarse o iniciar sesion: ")
 	username, _ := reader.ReadString('\n')
 	username = strings.TrimSpace(username)
 
