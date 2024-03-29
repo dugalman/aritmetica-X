@@ -2,20 +2,41 @@ package main
 
 import (
 	"encoding/gob"
+	"examen_server/controller"
 	"fmt"
+	"math"
 	"net"
 )
 
+// OperationType representa el tipo de operación
+type OperationType int
+
+const (
+	SUM   OperationType = 1
+	MINUS OperationType = 2
+	DIV   OperationType = 3
+	MULT  OperationType = 4
+	SIN   OperationType = 5
+	LOG   OperationType = 6
+	EXP   OperationType = 7
+	SQR   OperationType = 8
+)
+
+type CreateUser struct {
+	Username string
+	Password string
+}
+
 // OperationRequest representa la estructura de la solicitud del cliente
 type OperationRequest struct {
-	Num1 int
-	Num2 int
-	Op   rune
+	Num1 float64
+	Num2 float64
+	Op   OperationType
+	User CreateUser
 }
 
 // OperationResponse representa la estructura de la respuesta del servidor
 type OperationResponse struct {
-	Request   OperationRequest
 	Result    float64
 	ErrorCode int
 }
@@ -25,6 +46,25 @@ func handleClient(conn net.Conn) {
 
 	decoder := gob.NewDecoder(conn)
 	encoder := gob.NewEncoder(conn)
+
+	gob.Register(CreateUser{})
+	gob.Register(OperationRequest{})
+	gob.Register(OperationResponse{})
+
+	// Decodifica la solicitud de creación de usuario
+	var newUser CreateUser
+	err := decoder.Decode(&newUser)
+	if err != nil {
+		fmt.Println("Error al decodificar la solicitud de creación de usuario:", err)
+		return
+	}
+
+	// Registro de usuario aquí
+	err = controller.Register(conn, newUser.Username, newUser.Password)
+	if err != nil {
+		fmt.Println("Error al registrar usuario:", err)
+		return
+	}
 
 	for {
 		var request OperationRequest
@@ -37,17 +77,38 @@ func handleClient(conn net.Conn) {
 		var response OperationResponse
 
 		switch request.Op {
-		case '+':
-			response.Result = float64(request.Num1 + request.Num2)
-		case '-':
-			response.Result = float64(request.Num1 - request.Num2)
-		// Puedes agregar más operaciones aquí según sea necesario
-
+		case SUM:
+			response.Result = request.Num1 + request.Num2
+		case MINUS:
+			response.Result = request.Num1 - request.Num2
+		case DIV:
+			if request.Num2 == 0 {
+				response.ErrorCode = 1 // División por cero
+			} else {
+				response.Result = request.Num1 / request.Num2
+			}
+		case MULT:
+			response.Result = request.Num1 * request.Num2
+		case SIN:
+			response.Result = math.Sin(request.Num1)
+		case LOG:
+			if request.Num1 <= 0 {
+				response.ErrorCode = 2 // Logaritmo de número no válido
+			} else {
+				response.Result = math.Log(request.Num1)
+			}
+		case EXP:
+			response.Result = math.Exp(request.Num1)
+		case SQR:
+			if request.Num1 < 0 {
+				response.ErrorCode = 3 // Raíz cuadrada de número negativo
+			} else {
+				response.Result = math.Sqrt(request.Num1)
+			}
 		default:
-			response.ErrorCode = -1 // Código de error para operación no válida
+			response.ErrorCode = -1 // Operación no válida
 		}
 
-		response.Request = request
 		err = encoder.Encode(response)
 		if err != nil {
 			fmt.Println("Error al enviar la respuesta:", err)
