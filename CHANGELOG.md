@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - El cliente lee las operaciones desde el archivo **operation.txt** y las envia una por una al server
   - El server debe tener una bitacoria con las operaciones procesadas, se puede utilizar biblioteas externas
 
-## [0.0.1] - 2023-03-05
+## [0.0.2] - 2024-03-29
 
 ### Removed
 
@@ -59,6 +59,10 @@ OperationResponse: Estructura que representa la respuesta del servidor, incluyen
 
 Funciones:
 operationSymbol(op OperationType) string: Esta función toma un tipo de operación como entrada y devuelve el símbolo correspondiente de la operación, utilizado para mostrar la operación realizada en los resultados.
+
+//Funcionalidades de registro
+Se implemento una base de datos y un registro de usuario y contraseña
+falta que registre las operaciones que realiza
 ### Fixed
 
 ### Added
