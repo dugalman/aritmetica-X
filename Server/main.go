@@ -20,6 +20,11 @@ const (
 	LOG   OperationType = 6
 	EXP   OperationType = 7
 	SQR   OperationType = 8
+	AND   OperationType = 9
+	OR    OperationType = 10
+	NOT   OperationType = 11
+	XOR   OperationType = 12
+	NAND  OperationType = 13
 )
 
 type CreateUser struct {
@@ -29,16 +34,19 @@ type CreateUser struct {
 
 // OperationRequest representa la estructura de la solicitud del cliente
 type OperationRequest struct {
-	Num1 float64
-	Num2 float64
-	Op   OperationType
-	User CreateUser
+	Num1    float64
+	Num2    float64
+	Op      OperationType
+	User    CreateUser
+	Logical bool
 }
 
 // OperationResponse representa la estructura de la respuesta del servidor
+
 type OperationResponse struct {
-	Result    float64
-	ErrorCode int
+	Result     float64
+	ErrorCode  int
+	ResultBool bool
 }
 
 func handleClient(conn net.Conn) {
@@ -104,6 +112,43 @@ func handleClient(conn net.Conn) {
 				response.ErrorCode = 3 // Raíz cuadrada de número negativo
 			} else {
 				response.Result = math.Sqrt(request.Num1)
+			}
+		case AND:
+			if request.Num1 == request.Num2 {
+				response.ResultBool = true
+
+			} else {
+				response.ResultBool = false
+			}
+		case OR:
+			if request.Num1 == request.Num2 {
+				response.ResultBool = true
+
+			} else {
+				response.ResultBool = false
+			}
+		case NOT:
+			if request.Num1 > 0 {
+				response.ResultBool = true
+
+			} else {
+				response.ResultBool = false
+			}
+
+		case XOR:
+			if request.Num1 == request.Num2 {
+				response.ResultBool = false
+
+			} else {
+				response.ResultBool = true
+			}
+
+		case NAND:
+			if request.Num1 == request.Num2 {
+				response.ResultBool = false
+			}
+			if request.Num1 != request.Num2 {
+				response.ResultBool = true
 			}
 		default:
 			response.ErrorCode = -1 // Operación no válida

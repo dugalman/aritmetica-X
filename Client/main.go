@@ -19,16 +19,18 @@ type CreateUser struct {
 
 // OperationRequest representa la estructura de la solicitud del cliente
 type OperationRequest struct {
-	Num1 float64
-	Num2 float64
-	Op   utils.OperationType // Usa el tipo definido en utils
-	User CreateUser
+	Num1    float64
+	Num2    float64
+	Op      utils.OperationType // Usa el tipo definido en utils
+	User    CreateUser
+	logical bool
 }
 
 // OperationResponse representa la estructura de la respuesta del servidor
 type OperationResponse struct {
-	Result    float64
-	ErrorCode int
+	Result     float64
+	ErrorCode  int
+	ResultBool bool
 }
 
 func main() {
@@ -82,12 +84,17 @@ func main() {
 	fmt.Println("6.LOG")
 	fmt.Println("7.EXP")
 	fmt.Println("8.SQR")
+	fmt.Println("9.AND")
+	fmt.Println("10.OR")
+	fmt.Println("11.NOT")
+	fmt.Println("12.XOR")
+	fmt.Println("13.NAND")
 
 	// El bucle para el caso de que ingresen un número no válido
 	for {
 		fmt.Print("Ingrese el tipo de operación: ")
 		_, err = fmt.Scanf("%d\n", &operation)
-		if err != nil || operation < 1 || operation > 8 {
+		if err != nil || operation < 1 || operation > 13 {
 			fmt.Println("Tipo de operación no válida.")
 			continue
 		}
@@ -106,7 +113,7 @@ func main() {
 	}
 
 	// Comprobar si la operación requiere un segundo número
-	if operation != utils.SIN && operation != utils.LOG && operation != utils.EXP && operation != utils.SQR {
+	if operation != utils.SIN && operation != utils.LOG && operation != utils.EXP && operation != utils.SQR && operation != utils.NOT {
 		for {
 			fmt.Print("Ingrese el segundo número: ")
 			_, err := fmt.Scan(&num2)
@@ -158,6 +165,10 @@ func main() {
 	if response.ErrorCode != 0 {
 		fmt.Printf("Error: %d\n", response.ErrorCode)
 	} else {
-		fmt.Printf("Resultado de %g %s %g = %g\n", request.Num1, utils.OperationSymbol(request.Op), request.Num2, response.Result)
+		if request.Op == utils.AND || request.Op == utils.OR || request.Op == utils.XOR || request.Op == utils.NOT || request.Op == utils.NAND {
+			fmt.Printf("Resultado de %g %s %g = %t\n", request.Num1, utils.OperationSymbol(request.Op), request.Num2, response.ResultBool)
+		} else {
+			fmt.Printf("Resultado de %g %s %g = %g\n", request.Num1, utils.OperationSymbol(request.Op), request.Num2, response.Result)
+		}
 	}
 }
