@@ -1,30 +1,35 @@
 package main
 
 import (
-	"bufio"
 	"encoding/gob"
 	"fmt"
 	"net"
-	"os"
-	"strings"
 
+	"examen_client/models"
 	"examen_client/utils"
 )
 
 // CreateUser representa los datos de un nuevo usuario
+type OperationRequest struct {
+	Num1 float64
+	Num2 float64
+	Op   utils.OperationType // Tipo de operación
+}
+
+// CreateUser representa los datos de un nuevo usuario
 type CreateUser struct {
-	Username string
-	Password string
+	Username   string
+	Password   string
+	Operations []UserOperation
+}
+
+// UserOperation representa una operación realizada por el usuario
+type UserOperation struct {
+	Operation string
+	Result    float64
 }
 
 // OperationRequest representa la estructura de la solicitud del cliente
-type OperationRequest struct {
-	Num1    float64
-	Num2    float64
-	Op      utils.OperationType // Usa el tipo definido en utils
-	User    CreateUser
-	logical bool
-}
 
 // OperationResponse representa la estructura de la respuesta del servidor
 type OperationResponse struct {
@@ -44,30 +49,28 @@ func main() {
 	decoder := gob.NewDecoder(conn)
 	encoder := gob.NewEncoder(conn)
 
+	gob.Register(models.User{})
 	gob.Register(CreateUser{})
 	gob.Register(OperationRequest{})
 	gob.Register(OperationResponse{})
+	gob.Register(models.UserOperation{})
+	gob.Register(UserOperation{})
 
-	reader := bufio.NewReader(os.Stdin)
+	// reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Ingrese su nombre de usuario para registrarse o iniciar sesion: ")
-	username, _ := reader.ReadString('\n')
-	username = strings.TrimSpace(username)
-
-	fmt.Print("Ingrese su contraseña: ")
-	password, _ := reader.ReadString('\n')
-	password = strings.TrimSpace(password)
-
-	// Crear una solicitud de registro de usuario
-	registerRequest := CreateUser{
-		Username: username,
-		Password: password,
+	fmt.Print("Ingrese su nombre de usuario para registrarse o iniciar sesión: ")
+	var username string
+	_, err = fmt.Scan(&username)
+	if err != nil {
+		fmt.Println("Error al leer el nombre de usuario:", err)
+		return
 	}
 
-	// Enviar la solicitud de registro al servidor
-	err = encoder.Encode(registerRequest)
+	fmt.Print("Ingrese su contraseña: ")
+	var password string
+	_, err = fmt.Scan(&password)
 	if err != nil {
-		fmt.Println("Error al enviar la solicitud de registro:", err)
+		fmt.Println("Error al leer la contraseña:", err)
 		return
 	}
 
@@ -93,8 +96,12 @@ func main() {
 	// El bucle para el caso de que ingresen un número no válido
 	for {
 		fmt.Print("Ingrese el tipo de operación: ")
-		_, err = fmt.Scanf("%d\n", &operation)
-		if err != nil || operation < 1 || operation > 13 {
+		_, err := fmt.Scan(&operation)
+		if err != nil {
+			fmt.Println("Error al leer el tipo de operación:", err)
+			continue
+		}
+		if operation < 1 || operation > 13 {
 			fmt.Println("Tipo de operación no válida.")
 			continue
 		}
@@ -138,19 +145,38 @@ func main() {
 		return
 	}
 
+	resultOperation := num1 + num2
+
+	// Create an OperationRequest with user information
 	request := OperationRequest{
 		Num1: num1,
 		Num2: num2,
 		Op:   operation,
 	}
 
-	// Enviar la solicitud de operación al servidor
+	user := CreateUser{
+		Username: username,
+		Password: password,
+		Operations: []UserOperation{
+			{Operation: utils.OperationSymbol(operation), Result: resultOperation},
+		},
+	}
+
+	fmt.Println("Este es el request del cliente", request)
+
+	// Enviar la solicitud de registro al servidor
 	err = encoder.Encode(request)
 	if err != nil {
-		fmt.Println("Error al enviar la solicitud:", err)
+		fmt.Println("Error al enviar la solicitud de registro:", err)
+		return
+	}
+	err = encoder.Encode(user)
+	if err != nil {
+		fmt.Println("Error al enviar la solicitud de registro:", err)
 		return
 	}
 
+	// Recibir la respuesta del servidor
 	var response OperationResponse
 	err = decoder.Decode(&response)
 	if err != nil {
@@ -171,4 +197,5 @@ func main() {
 			fmt.Printf("Resultado de %g %s %g = %g\n", request.Num1, utils.OperationSymbol(request.Op), request.Num2, response.Result)
 		}
 	}
+
 }

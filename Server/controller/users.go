@@ -6,25 +6,32 @@ import (
 	"examen_server/utils"
 	"fmt"
 	"net"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
-func Register(conn net.Conn, username, password string) error {
-	user := models.User{Username: username}
+type OperationType int
 
-	// Buscar el usuario en la base de datos por nombre de usuario
+const (
+	SUM   OperationType = 1
+	MINUS OperationType = 2
+	DIV   OperationType = 3
+	MULT  OperationType = 4
+	SIN   OperationType = 5
+	LOG   OperationType = 6
+	EXP   OperationType = 7
+	SQR   OperationType = 8
+	AND   OperationType = 9
+	OR    OperationType = 10
+	NOT   OperationType = 11
+	XOR   OperationType = 12
+	NAND  OperationType = 13
+)
+
+func Register(conn net.Conn, username, password string, operations []models.UserOperation, num1, num2 float64, op int) error {
+	// Verificar si el usuario ya está registrado
 	var existingUser models.User
-	if err := db.Database.Where("username = ?", user.Username).First(&existingUser).Error; err == nil {
-		// Ya existe un usuario con el mismo nombre de usuario
-		// Verificar si la contraseña coincide
-		if err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(password)); err == nil {
-			fmt.Println("El usuario ya está registrado. Puede continuar operando.")
-			return nil // No es un error, simplemente indicamos que el usuario ya está registrado
-		} else {
-			fmt.Println("La contraseña proporcionada no coincide.")
-			return err // Devuelve un error indicando que la contraseña no coincide
-		}
+	if err := db.Database.Where("username = ?", username).First(&existingUser).Error; err == nil {
+		// El usuario ya existe
+		return fmt.Errorf("el usuario '%s' ya está registrado", username)
 	}
 
 	// Hashear la contraseña
@@ -34,14 +41,23 @@ func Register(conn net.Conn, username, password string) error {
 		return err
 	}
 
-	user.Password = hashedPassword
+	// Crear un nuevo usuario
+	newUser := models.User{
+		Num1:       num1,
+		Num2:       num2,
+		Op:         op,
+		Username:   username, // Usar el nombre de usuario proporcionado
+		Password:   hashedPassword,
+		Operations: operations,
+	}
 
 	// Guardar el nuevo usuario en la base de datos
-	if err := db.Database.Save(&user).Error; err != nil {
+	if err := db.Database.Create(&newUser).Error; err != nil {
 		fmt.Println("Error al crear el usuario en la base de datos:", err)
 		return err
 	}
 
+	fmt.Println("Usuario registrado exitosamente.")
 	return nil
 }
 

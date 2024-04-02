@@ -16,8 +16,3 @@ type UserOperation struct {
 	Operation string  `gorm:"not null" json:"operation"`
 	Result    float64 `gorm:"not null" json:"result"`
 }
-
-// func Migrations() {
-// 	db.Database.AutoMigrate(&User{})
-// 	db.Database.AutoMigrate(&UserOperation{})
-// }
