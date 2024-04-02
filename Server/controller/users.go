@@ -6,6 +6,9 @@ import (
 	"examen_server/utils"
 	"fmt"
 	"net"
+	"strconv"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type OperationType int
@@ -29,9 +32,26 @@ const (
 func Register(conn net.Conn, username, password string, operations []models.UserOperation, num1, num2 float64, op int) error {
 	// Verificar si el usuario ya está registrado
 	var existingUser models.User
-	if err := db.Database.Where("username = ?", username).First(&existingUser).Error; err == nil {
+	if err := db.Database.Where("username = ?", username).Preload("Operations").First(&existingUser).Error; err == nil {
 		// El usuario ya existe
-		return fmt.Errorf("el usuario '%s' ya está registrado", username)
+		// Verificar si la contraseña es correcta
+		if err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(password)); err != nil {
+			// La contraseña es incorrecta, no almacenar nada
+			fmt.Println("Contraseña incorrecta para el usuario existente.")
+			return nil
+		}
+
+		// La contraseña es correcta, agregar las nuevas operaciones
+		existingUser.Operations = append(existingUser.Operations, operations...)
+
+		// Actualizar el usuario en la base de datos con las nuevas operaciones
+		if err := db.Database.Save(&existingUser).Error; err != nil {
+			fmt.Println("Error al actualizar las operaciones del usuario:", err)
+			return err
+		}
+
+		fmt.Println("Operaciones añadidas al usuario existente.")
+		return nil
 	}
 
 	// Hashear la contraseña
@@ -45,7 +65,7 @@ func Register(conn net.Conn, username, password string, operations []models.User
 	newUser := models.User{
 		Num1:       num1,
 		Num2:       num2,
-		Op:         op,
+		Op:         strconv.Itoa(op),
 		Username:   username, // Usar el nombre de usuario proporcionado
 		Password:   hashedPassword,
 		Operations: operations,

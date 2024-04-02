@@ -91,6 +91,7 @@ func handleClient(conn net.Conn) {
 			for _, op := range newUser.Operations {
 				userOp := models.UserOperation{Operation: op.Operation, Result: op.Result}
 				userOperations = append(userOperations, userOp)
+				fmt.Println(userOperations)
 			}
 		}
 
@@ -171,6 +172,7 @@ func handleClient(conn net.Conn) {
 			fmt.Println("Error al enviar la respuesta:", err)
 			return
 		}
+
 		// Registro de usuario aquí
 		err = controller.Register(conn, newUser.Username, newUser.Password, userOperations, request.Num1, request.Num2, int(request.Op))
 		if err != nil {
