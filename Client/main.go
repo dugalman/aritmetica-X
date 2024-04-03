@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/gob"
 	"fmt"
+	"math"
 	"net"
 
 	"examen_client/models"
@@ -144,8 +145,47 @@ func main() {
 		fmt.Println("Error: No se puede multiplicar entre cero")
 		return
 	}
+	if operation == utils.LOG && (num1 == 0 || num1 < 0) {
+		fmt.Println("Error: No se obtener el logaritmo de cero o menor a cero")
+		return
+	}
+	if operation == utils.SQR && (num1 < 0) {
+		fmt.Println("Error: No se obtener la raiz cuadrada de un numero negativo")
+		return
+	}
 
-	resultOperation := num1 + num2
+	var resultOperation float64
+	switch operation {
+	case utils.SUM:
+		resultOperation = num1 + num2
+	case utils.MINUS:
+		resultOperation = num1 - num2
+	case utils.DIV:
+		resultOperation = num1 / num2
+	case utils.MULT:
+		resultOperation = num1 * num2
+	case utils.SIN:
+		resultOperation = math.Sin(num1)
+	case utils.LOG:
+		resultOperation = math.Log(num1)
+	case utils.EXP:
+		resultOperation = math.Exp(num1)
+	case utils.SQR:
+		resultOperation = math.Sqrt(num1)
+	case utils.AND:
+		resultOperation = float64(int(num1) & int(num2))
+	case utils.OR:
+		resultOperation = float64(int(num1) | int(num2))
+	case utils.NOT:
+		resultOperation = float64(^int(num1))
+	case utils.XOR:
+		resultOperation = float64(int(num1) ^ int(num2))
+	case utils.NAND:
+		resultOperation = float64(^int(num1) &^ int(num2))
+	default:
+		fmt.Println("Operación no válida.")
+		return
+	}
 
 	// Create an OperationRequest with user information
 	request := OperationRequest{
