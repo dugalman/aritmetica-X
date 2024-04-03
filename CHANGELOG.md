@@ -33,6 +33,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+La implementación de este programa funciona con una base de datos. Si bien vienen integradas las migraciones, les dejo los script para la reacrion de las tablas, dado que como en mi caso, las migraciones no funcionaban como lo esperado.
+
+Conexion a la DB var dsn = "root:root@tcp(localhost:3306)/aritmetica?charset=utf8mb4&parseTime=True&loc=Local"
+
+Scripts para la creación de las tablas:
+MySQL, gestor DBeaver
+tabla user: 
+CREATE TABLE users (
+    user_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    num1 DOUBLE,  
+    num2 DOUBLE, 
+    op int,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    operations VARCHAR(255)
+);
+
+tabla user_operations
+CREATE TABLE user_operations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    operation VARCHAR(100) NOT NULL,
+    result DOUBLE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
+
 Server
   Función main(): 
 
@@ -44,6 +70,11 @@ Estructuras OperationRequest y OperationResponse:
 
 OperationRequest representa la solicitud del cliente al servidor e incluye los números a operar y el tipo de operación.
 OperationResponse representa la respuesta del servidor e incluye el resultado de la operación y un código de error si corresponde.
+
+CreateUser. Representa una estructura para que el usuario se pueda registrar y loguear
+UserOperation. Contiene el tipo de operacion que hace el usuario y su resultado.
+
+Estas 2 estructuras a su vez estan representadas en los modelos para la interacción con la base de datos
 
 Función operationSymbol(op OperationType) string:
 
@@ -57,6 +88,9 @@ OperationRequest: Estructura que representa la solicitud del cliente al servidor
 
 OperationResponse: Estructura que representa la respuesta del servidor, incluyendo el resultado de la operación y un código de error si corresponde.
 
+CreateUser. Representa una estructura para que el usuario se pueda registrar y loguear
+UserOperation. Contiene el tipo de operacion que hace el usuario y su resultado
+
 Funciones:
 operationSymbol(op OperationType) string: Esta función toma un tipo de operación como entrada y devuelve el símbolo correspondiente de la operación, utilizado para mostrar la operación realizada en los resultados.
 
@@ -66,6 +100,7 @@ Quedo implementado en la version 0.0.2
 //Funcionalidades de registro
 Se implemento una base de datos y un registro de usuario y contraseña
 Ahora se almacena cada operacion que realiza el usuario. Evita usuarios repetidos
+Se almacenan las operaciones que hace el usuario. El register y login estan implementados en la misma funcion. El sistema detecta si el usuario ya esta o no registrado
 ### Fixed
 
 ### Added
